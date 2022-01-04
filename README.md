@@ -1,0 +1,2 @@
+# Codewars
+For Codewars only
