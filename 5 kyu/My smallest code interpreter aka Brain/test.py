@@ -2,14 +2,14 @@ class BrainFuck():
     pass
 def brain_luck(code:str, program_input:str) -> str:
 
-    def next_ins_tacker(i_code:int, code:str) -> int: #TODO find error in count [] method shoud find next, not first
+    def next_ins_tacker(i_code:int, code:str) -> int:
         counter = 0
         for i, code_elem in enumerate(code[i_code:]):
             if code_elem == "[":
                 counter += 1
             elif code_elem == "]":
                 if counter == 0:
-                    return i #+ i_code
+                    return i
                 counter -= 1
                 
     def prev_ins_tacker(i_code:int, code:str) -> int:
@@ -59,8 +59,8 @@ def brain_luck(code:str, program_input:str) -> str:
                         data[pointer] += 1
             case ".":
                 out += chr(data[pointer])
-                # data.pop(pointer)
-                # pointer = 0
+                data.pop(pointer)
+                pointer = 0
 
             case ",":
                 if len(program_input) == 0:
@@ -70,23 +70,21 @@ def brain_luck(code:str, program_input:str) -> str:
                 program_input = program_input[1:]   
 
             case "[":
-                if data.get(pointer) == 0 or data.get(pointer) == None:
+                if data[pointer] == 0:
                     i_next = next_ins_tacker(i_code,code)
                     i_code = i_next
                 # elif data[pointer] == chr(0):
                 #     i_next = next_ins_tacker(i_code,code)
                 #     i_code = i_next
             case "]":
-                if data.get(pointer) != 0 and data.get(pointer) != None:
-                    i_prev = prev_ins_tacker(i_code,code)
+                i_prev = prev_ins_tacker(i_code,code)
+                if data[pointer] != 0:
                     i_code = i_prev
-                if data.get(pointer) == 0 or data.get(pointer) == None:
-                    pass
                 # elif data[pointer] != chr(0):
                 #     i_code = i_prev   
         i_code += 1      
     return out
 
 print(
-brain_luck(',>+>>>>++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++<<<<<<[>[>>>>>>+>+<<<<<<<-]>>>>>>>[<<<<<<<+>>>>>>>-]<[>++++++++++[-<-[>>+>+<<<-]>>>[<<<+>>>-]+<[>[-]<[-]]>[<<[>>>+<<<-]>>[-]]<<]>>>[>>+>+<<<-]>>>[<<<+>>>-]+<[>[-]<[-]]>[<<+>>[-]]<<<<<<<]>>>>>[++++++++++++++++++++++++++++++++++++++++++++++++.[-]]++++++++++<[->-<]>++++++++++++++++++++++++++++++++++++++++++++++++.[-]<<<<<<<<<<<<[>>>+>+<<<<-]>>>>[<<<<+>>>>-]<-[>>.>.<<<[-]]<<[>>+>+<<<-]>>>[<<<+>>>-]<<[<+>-]>[<+>-]<<<-]', chr(10))
+brain_luck(',>,<[>[->+>+<<]>>[-<<+>>]<<<-]>>.', chr(8) + chr(9))
 )
