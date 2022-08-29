@@ -1,18 +1,65 @@
-class BrainFuck():
-    pass
-def brain_luck(code:str, program_input:str) -> str:
 
-    def next_ins_tacker(i_code:int, code:str) -> int: #TODO find error in count [] method shoud find next, not first
+
+class BrainFuck():
+    pointer = 0
+    data = {}
+    out = ""
+    i_code = 0
+
+    def __init__(self, code, program_input) -> None:
+        self.program_input = str(program_input)
+        self.code = code
+        self.len_code = len(code)
+        self.commands = {
+            ">": self.inc_pointer,
+            "<": self.dec_pointer,
+            "+": self.inc_data,
+            "-": self.dec_data,
+            ".": self.write_output,
+            ",": self.read_input,
+            "[": self.start_cycle,
+            "]": self.end_cycle,
+        }
+
+    def inc_pointer(self):
+        self.pointer += 1
+
+    def dec_pointer(self):
+        self.pointer -= 1
+
+    def inc_data(self):
+        self.data_in_pointer = self.data.get(self.pointer)
+        if not self.data_in_pointer:
+            self.data.update({self.pointer: (0 + 1) % 256})
+        else:
+            self.data.update({self.pointer: (self.data_in_pointer + 1) % 256})
+    
+    def dec_data(self):
+        self.data_in_pointer = self.data.get(self.pointer)
+        if not self.data_in_pointer:
+            self.data.update({self.pointer: (0 - 1) % 256})
+        else:
+            self.data.update({self.pointer: (self.data_in_pointer - 1) % 256})
+    
+    def write_output(self):
+        self.out += chr(self.data[self.pointer])
+        
+    def read_input(self):
+        if len(self.program_input) != 0:
+                self.data.update({self.pointer: ord(self.program_input[0])})
+                self.program_input = self.program_input[1:]
+
+    def next_ins_tacker(self, i_code:int, code:str) -> int:
         counter = 0
-        for i, code_elem in enumerate(code[i_code:]):
+        for i, code_elem in enumerate(code[i_code + 1:]):
             if code_elem == "[":
                 counter += 1
             elif code_elem == "]":
                 if counter == 0:
-                    return i #+ i_code
+                    return i_code + 1 + i
                 counter -= 1
                 
-    def prev_ins_tacker(i_code:int, code:str) -> int:
+    def prev_ins_tacker(self, i_code:int, code:str) -> int:
         counter = 0
         for i, code_elem in enumerate(code[i_code - 1::-1]):
             if code_elem == "]":
@@ -21,72 +68,29 @@ def brain_luck(code:str, program_input:str) -> str:
                 if counter == 0:
                     return i_code - (i + 1)
                 counter -= 1
-    pointer = 0
-    data = {}
-    out = ""
-    i_code = 0
-    len_code = len(code)
-    while i_code < len_code:
-        code_elem = code[i_code]
-        match code_elem:
-            case ">":
-                pointer += 1
-            case "<":
-                pointer -= 1
-            case "+":
-                try:
-                    if data[pointer] + 1 > 255:
-                        data[pointer] += 1 - 256
-                    else:
-                        data[pointer] += 1
-                except:
-                    data.update({pointer: 0})
-                    if data[pointer] + 1 > 255:
-                        data[pointer] += 1 - 256
-                    else:
-                        data[pointer] += 1
-            case "-":
-                try:
-                    if data[pointer] - 1 < 0:
-                        data[pointer] = data[pointer] - 1 + 256
-                    else:
-                        data[pointer] = data[pointer] - 1
-                except:
-                    data.update({pointer: 0})
-                    if data[pointer] + 1 > 255:
-                        data[pointer] += 1 - 256
-                    else:
-                        data[pointer] += 1
-            case ".":
-                out += chr(data[pointer])
-                # data.pop(pointer)
-                # pointer = 0
+    
+    def start_cycle(self):
+        if self.data.get(self.pointer) == 0 or self.data.get(self.pointer) == None:
+                    self.i_next = self.next_ins_tacker(self.i_code,self.code)
+                    self.i_code = self.i_next
 
-            case ",":
-                if len(program_input) == 0:
-                    break
+    def end_cycle(self):
+        if self.data.get(self.pointer) != 0 and self.data.get(self.pointer) != None:
+            self.i_prev = self.prev_ins_tacker(self.i_code,self.code)
+            self.i_code = self.i_prev
 
-                data.update({pointer: ord(program_input[0])})
-                program_input = program_input[1:]   
 
-            case "[":
-                if data.get(pointer) == 0 or data.get(pointer) == None:
-                    i_next = next_ins_tacker(i_code,code)
-                    i_code = i_next
-                # elif data[pointer] == chr(0):
-                #     i_next = next_ins_tacker(i_code,code)
-                #     i_code = i_next
-            case "]":
-                if data.get(pointer) != 0 and data.get(pointer) != None:
-                    i_prev = prev_ins_tacker(i_code,code)
-                    i_code = i_prev
-                if data.get(pointer) == 0 or data.get(pointer) == None:
-                    pass
-                # elif data[pointer] != chr(0):
-                #     i_code = i_prev   
-        i_code += 1      
-    return out
+def brain_luck(code:str, program_input:str) -> str:
+    
+    brainLuck = BrainFuck(code=code, program_input=program_input)
+    while brainLuck.i_code < brainLuck.len_code:
+        code_elem = code[brainLuck.i_code]
+        brainLuck.commands.get(code_elem)()
+        brainLuck.i_code += 1
+        out = brainLuck.out
+    return brainLuck.out
 
 print(
-brain_luck(',>+>>>>++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++<<<<<<[>[>>>>>>+>+<<<<<<<-]>>>>>>>[<<<<<<<+>>>>>>>-]<[>++++++++++[-<-[>>+>+<<<-]>>>[<<<+>>>-]+<[>[-]<[-]]>[<<[>>>+<<<-]>>[-]]<<]>>>[>>+>+<<<-]>>>[<<<+>>>-]+<[>[-]<[-]]>[<<+>>[-]]<<<<<<<]>>>>>[++++++++++++++++++++++++++++++++++++++++++++++++.[-]]++++++++++<[->-<]>++++++++++++++++++++++++++++++++++++++++++++++++.[-]<<<<<<<<<<<<[>>>+>+<<<<-]>>>>[<<<<+>>>>-]<-[>>.>.<<<[-]]<<[>>+>+<<<-]>>>[<<<+>>>-]<<[<+>-]>[<+>-]<<<-]', chr(10))
+brain_luck('>++++[-<+++++++++++>]>,[>++++++[-<-------->]>+++++++++[-<<<[->+>+<<]>>[-<<+>>]>]<<[-<+>],]<<+++++.-----.+++++.----->-->+>+<<[-<.>>>[->+>+<<]<[->>>+<<<]>>[-<<+>>]>[->+<<<+>>]>[>>>>++++++++++<<<<[->+>>+>-[<-]<[->>+<<<<[->>>+<<<]>]<<]>+[-<+>]>>>[-]>[-<<<<+>>>>]<<<<]<[>++++++[<++++++++>-]<-.[-]<]<<<<]', "9")
 )
+
