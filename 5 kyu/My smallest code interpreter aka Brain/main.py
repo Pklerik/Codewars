@@ -46,8 +46,10 @@ class BrainFuck():
         
     def read_input(self):
         if len(self.program_input) != 0:
-                self.data.update({self.pointer: ord(self.program_input[0])})
-                self.program_input = self.program_input[1:]
+            self.data.update({self.pointer: ord(self.program_input[0])})
+            self.program_input = self.program_input[1:]
+        else:
+            self.data.update({self.pointer: 0})
 
     def next_ins_tacker(self, i_code:int, code:str) -> int:
         counter = 0
@@ -71,8 +73,8 @@ class BrainFuck():
     
     def start_cycle(self):
         if self.data.get(self.pointer) == 0 or self.data.get(self.pointer) == None:
-                    self.i_next = self.next_ins_tacker(self.i_code,self.code)
-                    self.i_code = self.i_next
+            self.i_next = self.next_ins_tacker(self.i_code,self.code)
+            self.i_code = self.i_next
 
     def end_cycle(self):
         if self.data.get(self.pointer) != 0 and self.data.get(self.pointer) != None:
@@ -81,6 +83,8 @@ class BrainFuck():
 
 
 def brain_luck(code:str, program_input:str) -> str:
+    print('programm: ' + code)
+    print('input:"' + program_input + '"')
     
     brainLuck = BrainFuck(code=code, program_input=program_input)
     while brainLuck.i_code < brainLuck.len_code:
@@ -90,7 +94,11 @@ def brain_luck(code:str, program_input:str) -> str:
         out = brainLuck.out
     return brainLuck.out
 
-print(
-brain_luck('>++++[-<+++++++++++>]>,[>++++++[-<-------->]>+++++++++[-<<<[->+>+<<]>>[-<<+>>]>]<<[-<+>],]<<+++++.-----.+++++.----->-->+>+<<[-<.>>>[->+>+<<]<[->>>+<<<]>>[-<<+>>]>[->+<<<+>>]>[>>>>++++++++++<<<<[->+>>+>-[<-]<[->>+<<<<[->>>+<<<]>]<<]>+[-<+>]>>>[-]>[-<<<<+>>>>]<<<<]<[>++++++[<++++++++>-]<-.[-]<]<<<<]', "9")
-)
+
+# code = ",>,<[>[->+>+<<]>>[-<<+>>]<<<-]>>."
+# program_input = '\x04\x07'
+code = ",>+>>>>++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++<<<<<<[>[>>>>>>+>+<<<<<<<-]>>>>>>>[<<<<<<<+>>>>>>>-]<[>++++++++++[-<-[>>+>+<<<-]>>>[<<<+>>>-]+<[>[-]<[-]]>[<<[>>>+<<<-]>>[-]]<<]>>>[>>+>+<<<-]>>>[<<<+>>>-]+<[>[-]<[-]]>[<<+>>[-]]<<<<<<<]>>>>>[++++++++++++++++++++++++++++++++++++++++++++++++.[-]]++++++++++<[->-<]>++++++++++++++++++++++++++++++++++++++++++++++++.[-]<<<<<<<<<<<<[>>>+>+<<<<-]>>>>[<<<<+>>>>-]<-[>>.>.<<<[-]]<<[>>+>+<<<-]>>>[<<<+>>>-]<<[<+>-]>[<+>-]<<<-]"
+program_input = "\n"
+print(brain_luck(code, program_input))
+
 
